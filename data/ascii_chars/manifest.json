@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "player_idle",
+      "role": "player",
+      "spriteText": "sprites/player_idle.txt",
+      "pixelImage": "pixels/player_idle.ppm",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "enemy_patrol",
+      "role": "enemy",
+      "spriteText": "sprites/enemy_patrol.txt",
+      "pixelImage": "pixels/enemy_patrol.ppm",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "boss_core",
+      "role": "boss",
+      "spriteText": "sprites/boss_core.txt",
+      "pixelImage": "pixels/boss_core.ppm",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "shard",
+      "role": "collectible",
+      "spriteText": "sprites/shard.txt",
+      "pixelImage": "pixels/shard.ppm",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "wall_tile",
+      "role": "tile",
+      "spriteText": "sprites/wall_tile.txt",
+      "pixelImage": "pixels/wall_tile.ppm",
+      "width": 8,
+      "height": 8
+    }
+  ]
+}
