@@ -21,7 +21,7 @@ New-Item -ItemType Directory -Force -Path build | Out-Null
 
 if ($hasCl) {
     Write-Host "[2/4] Building C++ physics DLL..."
-    & cl /nologo /LD /EHsc /I native_cpp\include native_cpp\src\*.cpp /link /OUT:build\physics.dll
+    & cl /nologo /LD /EHsc /I native_cpp\include native_cpp\src\*.cpp native_c\particles.c native_c\spatial_hash.c /link /OUT:build\physics.dll
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     Write-Host "[3/4] Building C score utility..."

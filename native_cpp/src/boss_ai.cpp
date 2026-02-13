@@ -10,14 +10,14 @@ int nt_update_boss_motion(float dt, float x, float baseY, float dir, float leftB
         return -1;
     }
 
-    const float healthRatio = std::clamp(static_cast<float>(health) / static_cast<float>(maxHealth), 0.0f, 1.0f);
+    const float healthRatio = nt_clamp(static_cast<float>(health) / static_cast<float>(maxHealth), 0.0f, 1.0f);
     const float aggressionBoost = 1.0f + (1.0f - healthRatio) * 0.35f;
 
     float nextDir = (dir < 0.0f) ? -1.0f : 1.0f;
     float nextX = x + speed * aggressionBoost * nextDir * dt;
     if (nextX <= leftBound || nextX >= rightBound) {
         nextDir *= -1.0f;
-        nextX = std::clamp(nextX, leftBound, rightBound);
+        nextX = nt_clamp(nextX, leftBound, rightBound);
     }
 
     const float t = static_cast<float>(elapsedMs) / 1000.0f;

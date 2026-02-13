@@ -13,7 +13,10 @@
       "Bash(wmic:*)",
       "Bash(dotnet:*)",
       "Bash(\"C:\\\\Users\\\\sachi\\\\Master_Coding\\\\Neon_Tyrant\\\\game_cs\\\\bin\\\\Release\\\\net8.0\\\\win-x64\\\\NeonTyrant.exe\")",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(winget search:*)",
+      "Bash(winget install:*)",
+      "Bash(cmd /c \"where zig 2>&1\")"
     ]
   }
 }

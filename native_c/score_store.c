@@ -29,9 +29,8 @@ static int load_stats(const char* path) {
     int total_score = 0;
 
     while (fgets(line, sizeof(line), fp) != NULL) {
-        char* ctx = NULL;
-        strtok_s(line, ",", &ctx);
-        char* score = strtok_s(NULL, ",", &ctx);
+        strtok(line, ",");
+        char* score = strtok(NULL, ",");
         if (score == NULL) {
             continue;
         }

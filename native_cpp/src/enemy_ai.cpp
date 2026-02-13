@@ -24,7 +24,7 @@ int nt_update_enemy_patrol(float dt, const NtEnemyState* inState, NtEnemyState* 
     int turnDelayMs = 0;
 
     if (x <= inState->left || x >= inState->right) {
-        x = std::clamp(x, inState->left, inState->right);
+        x = nt_clamp(x, inState->left, inState->right);
         direction = -direction;
         turnDelayMs = 80;
     }

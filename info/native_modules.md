@@ -12,12 +12,17 @@ Neon Tyrant uses optional native modules for performance and gameplay smoothing 
   - jump assist (coyote + jump buffer)
   - enemy patrol update
   - boss movement update
+  - screen effects (`native_cpp/src/screen_fx.cpp`)
+  - procedural generation (`native_cpp/src/procgen.cpp`)
 
 ## C (`native_c`)
 - `score_store.exe` handles CSV score persistence commands:
   - `load`
   - `stats`
   - `save`
+- `physics.dll` now also includes:
+  - particle system (`native_c/particles.c`)
+  - spatial hash broad-phase (`native_c/spatial_hash.c`)
 
 ## Bridge Layer
 - `game_cs/src/NativePhysicsBridge.cs` calls native APIs via P/Invoke.
@@ -25,5 +30,5 @@ Neon Tyrant uses optional native modules for performance and gameplay smoothing 
 - If native binaries are absent, managed fallback logic is used.
 
 ## Build Notes
-- `scripts/build.*` compiles all C++ files under `native_cpp/src/*.cpp`
+- `scripts/build.*` compiles all C++ files under `native_cpp/src/*.cpp` and links `native_c/particles.c` + `native_c/spatial_hash.c` into `physics.dll`
 - Native build requires `cl.exe`

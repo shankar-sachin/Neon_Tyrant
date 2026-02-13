@@ -22,7 +22,7 @@ mkdir -p build
 
 if [ "$HAS_CL" -eq 1 ]; then
   echo "[2/4] Building C++ physics DLL..."
-  cl /nologo /LD /EHsc /I native_cpp\\include native_cpp\\src\\*.cpp /link /OUT:build\\physics.dll
+  cl /nologo /LD /EHsc /I native_cpp\\include native_cpp\\src\\*.cpp native_c\\particles.c native_c\\spatial_hash.c /link /OUT:build\\physics.dll
 
   echo "[3/4] Building C score utility..."
   cl /nologo /TC native_c\\score_store.c /link /OUT:build\\score_store.exe

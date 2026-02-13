@@ -139,11 +139,55 @@ public static class NativePhysicsBridge
     {
         if (!NativeAvailable)
         {
-            return new NtCollisionResult
+            var next = new NtAabb
+            {
+                X = player.X + dx,
+                Y = player.Y + dy,
+                W = player.W,
+                H = player.H
+            };
+
+            if (!(next.X + next.W > obstacle.X &&
+                  next.X < obstacle.X + obstacle.W &&
+                  next.Y + next.H > obstacle.Y &&
+                  next.Y < obstacle.Y + obstacle.H))
+            {
+                return new NtCollisionResult
+                {
+                    ResolvedDx = dx,
+                    ResolvedDy = dy,
+                    CollidedX = 0,
+                    CollidedY = 0
+                };
+            }
+
+            var overlapLeft = (next.X + next.W) - obstacle.X;
+            var overlapRight = (obstacle.X + obstacle.W) - next.X;
+            var overlapTop = (next.Y + next.H) - obstacle.Y;
+            var overlapBottom = (obstacle.Y + obstacle.H) - next.Y;
+            var pushX = overlapLeft < overlapRight ? -overlapLeft : overlapRight;
+            var pushY = overlapTop < overlapBottom ? -overlapTop : overlapBottom;
+
+            var resolved = new NtCollisionResult
             {
                 ResolvedDx = dx,
-                ResolvedDy = dy
+                ResolvedDy = dy,
+                CollidedX = 0,
+                CollidedY = 0
             };
+
+            if (MathF.Abs(pushX) < MathF.Abs(pushY))
+            {
+                resolved.ResolvedDx += pushX;
+                resolved.CollidedX = 1;
+            }
+            else
+            {
+                resolved.ResolvedDy += pushY;
+                resolved.CollidedY = 1;
+            }
+
+            return resolved;
         }
 
         nt_resolve_player_move(ref player, dx, dy, ref obstacle, out var result);
