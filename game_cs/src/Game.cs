@@ -8,6 +8,7 @@ public sealed class Game
     private const float PlayerWidth = 0.8f;
     private const float PlayerHeight = 0.9f;
     private const float MoveSpeed = 7.4f;
+    private const float FatalLandingVelocity = 13.5f;
 
     private readonly ScoreService _scoreService = new(AppContext.BaseDirectory);
     private readonly List<LevelData> _levels;
@@ -112,6 +113,7 @@ public sealed class Game
             moveX += dashResult.MoveX;
 
             var hitGround = MoveWithCollision(runtime, ref playerX, ref playerY, moveX, step.MoveY);
+            var tookFatalLanding = !groundedNow && hitGround && step.VelocityY >= FatalLandingVelocity;
             if (hitGround && velocityY > 0)
             {
                 velocityY = 0;
@@ -181,7 +183,8 @@ public sealed class Game
                 || TouchesEnemy(runtime, playerBox)
                 || (runtime.Data.Boss is not null && bossHealth > 0 &&
                     NativePhysicsBridge.Intersects(playerBox, new NativePhysicsBridge.NtAabb { X = bossX, Y = bossY, W = 1.2f, H = 1.2f }));
-            if (hitHazard && invincibleMs <= 0)
+            var tookDamage = tookFatalLanding || (hitHazard && invincibleMs <= 0);
+            if (tookDamage)
             {
                 _lives--;
                 if (_lives <= 0)
