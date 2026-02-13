@@ -15,6 +15,14 @@ Windows multi-language console game with multiple levels.
 - Python 3 (`python` in PATH)
 - Optional: MSVC `cl.exe` (Visual Studio Build Tools) for native C/C++ modules
 
+
+## How to Use
+- Open an IDE like Visual Studio or CLion to get started
+- Use the command `git clone https://github.com/atom-bowl/TyrantErr.git` to clone the repository into your local
+- Go to the file `build.bat` and click Run
+- Then go to file `run.bat` and click Run
+- The game will be displayed in a colorful ASCII console format
+
 ## Build
 ```bat
 scripts\build.bat
