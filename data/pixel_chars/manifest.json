@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "assets": [
     {
       "id": "player_idle",
@@ -38,6 +38,48 @@
       "role": "tile",
       "spriteText": "sprites/wall_tile.txt",
       "pixelImage": "pixels/wall_tile.ppm",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "hazard_spike",
+      "role": "hazard",
+      "spriteText": "sprites/hazard_spike.txt",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "checkpoint_flag",
+      "role": "checkpoint",
+      "spriteText": "sprites/checkpoint_flag.txt",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "exit_portal",
+      "role": "exit",
+      "spriteText": "sprites/exit_portal.txt",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "platform",
+      "role": "tile",
+      "spriteText": "sprites/platform.txt",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "heart",
+      "role": "ui",
+      "spriteText": "sprites/heart.txt",
+      "width": 8,
+      "height": 8
+    },
+    {
+      "id": "background",
+      "role": "background",
+      "spriteText": "sprites/background.txt",
       "width": 8,
       "height": 8
     }

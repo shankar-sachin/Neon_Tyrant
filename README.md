@@ -1,9 +1,10 @@
 # Neon Tyrant (Former name TyrantErr)
 
-Windows multi-language console game with multiple levels.
+Windows multi-language platformer running in a Raylib window.
 
 ## Stack
-- C# (.NET 8) for game loop, rendering, level flow
+- C# (.NET 8) for game loop and level flow
+- Raylib-cs (`Raylib-cs` NuGet package) for window creation, drawing, and input
 - C++ DLL for physics stepping and AABB collision tests
 - C utility for score persistence
 - Python for level validation
@@ -22,7 +23,7 @@ Windows multi-language console game with multiple levels.
 - Use the command `git clone https://github.com/atom-bowl/TyrantErr.git` to clone the repository into your local
 - Go to the file `build.bat` and click Run
 - Then go to file `run.bat` and click Run
-- The game will be displayed in a colorful ASCII console format
+- The game opens as a Raylib desktop window (`game_cs/src/Program.cs`)
 
 ## Build
 ```bat
@@ -64,3 +65,4 @@ Shell: `./scripts/clean.sh`
 - Level data is stored in `assets/levels/`.
 - High scores are persisted in `data/scores.csv`.
 - Native features are auto-enabled when `physics.dll` and `score_store.exe` are present.
+- The main window entrypoint is `game_cs/src/Program.cs` (`Raylib.InitWindow(...)`).

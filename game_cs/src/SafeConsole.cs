@@ -57,6 +57,23 @@ public static class SafeConsole
         }
     }
 
+    public static bool TryWrite(string text)
+    {
+        try
+        {
+            Console.Write(text);
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
     public static int GetWindowWidthOrDefault(int fallback = 100)
     {
         try

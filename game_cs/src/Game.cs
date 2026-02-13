@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Raylib_cs;
 
 namespace NeonTyrant;
 
@@ -7,7 +8,6 @@ public sealed class Game
     private const float PlayerWidth = 0.8f;
     private const float PlayerHeight = 0.9f;
     private const float MoveSpeed = 7.4f;
-    private const int FrameMs = 33;
 
     private readonly ScoreService _scoreService = new(AppContext.BaseDirectory);
     private readonly List<LevelData> _levels;
@@ -18,7 +18,6 @@ public sealed class Game
     private int _totalElapsedMs;
     private int _levelsCompleted;
     private string _playerName = "PLAYER";
-    private bool _supportsCursorRepaint = true;
 
     public Game()
     {
@@ -28,14 +27,11 @@ public sealed class Game
 
     public void Run()
     {
-        SafeConsole.TrySetCursorVisible(false);
-        SafeConsole.TryClear();
-
         try
         {
             DrawIntro();
 
-            for (var levelIndex = 0; levelIndex < _levels.Count; levelIndex++)
+            for (var levelIndex = 0; levelIndex < _levels.Count && !Raylib.WindowShouldClose(); levelIndex++)
             {
                 var result = PlayLevel(levelIndex);
                 _totalElapsedMs += result.ElapsedMs;
@@ -46,13 +42,15 @@ public sealed class Game
                 _levelsCompleted++;
             }
 
-            _scoreService.Save(_playerName, _score, _levelsCompleted, _totalElapsedMs);
-            DrawOutro();
+            if (!Raylib.WindowShouldClose())
+            {
+                _scoreService.Save(_playerName, _score, _levelsCompleted, _totalElapsedMs);
+                DrawOutro();
+            }
         }
         finally
         {
             NativePhysicsBridge.Shutdown();
-            SafeConsole.TrySetCursorVisible(true);
         }
     }
 
@@ -77,19 +75,19 @@ public sealed class Game
         var bossMotionElapsedMs = 0;
 
         var timer = Stopwatch.StartNew();
-        var frameClock = Stopwatch.StartNew();
         var secondAccumulator = 0;
 
-        while (true)
+        while (!Raylib.WindowShouldClose())
         {
-            var frameStart = frameClock.ElapsedMilliseconds;
+            var dt = Math.Clamp(Raylib.GetFrameTime(), 0.001f, 0.1f);
+            var frameMs = (int)(dt * 1000);
+
             var input = InputService.ReadFrame();
             if (input.EscapePressed)
             {
                 ShowPauseScreen();
             }
 
-            var dt = FrameMs / 1000f;
             var groundedNow = IsGrounded(runtime, playerX, playerY);
             var jumpAssist = NativePhysicsBridge.UpdateJumpAssist(dt, input.JumpPressed, groundedNow, coyoteMs, jumpBufferMs);
             coyoteMs = jumpAssist.CoyoteMs;
@@ -125,7 +123,7 @@ public sealed class Game
                 var speed = bossHealth > runtime.Data.Boss.Health / 2
                     ? runtime.Data.Boss.PhaseSpeed[0]
                     : runtime.Data.Boss.PhaseSpeed[Math.Min(1, runtime.Data.Boss.PhaseSpeed.Count - 1)];
-                bossMotionElapsedMs += FrameMs;
+                bossMotionElapsedMs += frameMs;
                 var leftBound = 4f;
                 var rightBound = runtime.Width - 4f;
                 var bossStep = NativePhysicsBridge.UpdateBossMotion(
@@ -198,7 +196,7 @@ public sealed class Game
                 runtime.RemainingTimeSec = Math.Max(20, runtime.RemainingTimeSec - 4);
             }
 
-            secondAccumulator += FrameMs;
+            secondAccumulator += frameMs;
             if (secondAccumulator >= 1000)
             {
                 runtime.RemainingTimeSec--;
@@ -218,15 +216,13 @@ public sealed class Game
                 }
             }
 
-            invincibleMs -= FrameMs;
-            DrawFrame(runtime, levelIndex + 1, playerX, playerY, bossX, bossY, bossHealth, dashCooldownMs, invincibleMs > 0);
+            invincibleMs = Math.Max(0, invincibleMs - frameMs);
 
-            var elapsed = frameClock.ElapsedMilliseconds - frameStart;
-            if (elapsed < FrameMs)
-            {
-                Thread.Sleep((int)(FrameMs - elapsed));
-            }
+            var blinkPlayer = invincibleMs > 0 && ((int)(timer.ElapsedMilliseconds / 100) % 2 == 0);
+            DrawFrame(runtime, levelIndex + 1, playerX, playerY, bossX, bossY, bossHealth, dashCooldownMs, blinkPlayer);
         }
+
+        return new LevelResult(true, (int)timer.ElapsedMilliseconds);
     }
 
     private bool MoveWithCollision(LevelRuntime runtime, ref float playerX, ref float playerY, float dx, float dy)
@@ -245,14 +241,12 @@ public sealed class Game
 
         for (var i = 0; i < steps; i++)
         {
-            var trialX = playerX + stepX;
-            var trialY = playerY + stepY;
             var playerBox = new NativePhysicsBridge.NtAabb { X = playerX, Y = playerY, W = PlayerWidth, H = PlayerHeight };
             var correctedX = stepX;
             var correctedY = stepY;
             ResolveAgainstNearbySolids(runtime, playerBox, ref correctedX, ref correctedY);
-            trialX = playerX + correctedX;
-            trialY = playerY + correctedY;
+            var trialX = playerX + correctedX;
+            var trialY = playerY + correctedY;
 
             if (CollidesWithSolid(runtime, trialX, trialY))
             {
@@ -437,33 +431,18 @@ public sealed class Game
 
     private void DrawFrame(LevelRuntime runtime, int levelNumber, float playerX, float playerY, float bossX, float bossY, int bossHealth, int dashCooldownMs, bool blinkPlayer)
     {
-        if (_supportsCursorRepaint)
-        {
-            if (!SafeConsole.TrySetCursorPosition(0, 0))
-            {
-                _supportsCursorRepaint = false;
-                SafeConsole.TryClear();
-            }
-        }
-        else
-        {
-            SafeConsole.TryClear();
-        }
-        HudRenderer.DrawTopBar(levelNumber, _lives, _score, runtime.RemainingTimeSec, runtime.Data.Name);
-        HudRenderer.DrawLegend();
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.WriteLine(_nativeReady ? "Native bridge: ON" : "Native bridge: OFF (managed fallback)");
-        Console.ResetColor();
+        PixelRenderer.BeginFrame();
 
-        var buffer = runtime.Tiles.Select(row => row.ToArray()).ToArray();
+        for (var y = 0; y < runtime.Height; y++)
+            for (var x = 0; x < runtime.Width; x++)
+                PixelRenderer.DrawTile(x, y, runtime.Tiles[y][x]);
+
         foreach (var enemy in runtime.Enemies)
         {
             var ex = (int)MathF.Round(enemy.X);
             var ey = (int)MathF.Round(enemy.Y);
             if (InBounds(runtime, ex, ey))
-            {
-                buffer[ey][ex] = 'M';
-            }
+                PixelRenderer.DrawTile(ex, ey, 'M');
         }
 
         if (runtime.Data.Boss is not null && bossHealth > 0)
@@ -471,144 +450,137 @@ public sealed class Game
             var bx = (int)MathF.Round(bossX);
             var by = (int)MathF.Round(bossY);
             if (InBounds(runtime, bx, by))
-            {
-                buffer[by][bx] = 'B';
-            }
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Boss HP: {bossHealth}");
-            Console.ResetColor();
-        }
-        else
-        {
-            Console.WriteLine("Boss HP: --");
+                PixelRenderer.DrawTile(bx, by, 'B');
         }
 
-        if (dashCooldownMs <= 0)
+        if (!blinkPlayer)
         {
-            Console.WriteLine("Dash: READY");
-        }
-        else
-        {
-            Console.WriteLine($"Dash: {dashCooldownMs / 1000.0:F1}s");
-        }
-
-        var px = (int)MathF.Round(playerX);
-        var py = (int)MathF.Round(playerY);
-        if (InBounds(runtime, px, py) && !blinkPlayer)
-        {
-            buffer[py][px] = '@';
+            var px = (int)MathF.Round(playerX);
+            var py = (int)MathF.Round(playerY);
+            if (InBounds(runtime, px, py))
+                PixelRenderer.DrawTile(px, py, '@');
         }
 
-        foreach (var row in buffer)
-        {
-            for (var i = 0; i < row.Length; i++)
-            {
-                DrawTile(row[i]);
-            }
-            Console.WriteLine();
-            Console.ResetColor();
-        }
+        HudRenderer.Draw(levelNumber, _lives, _score, runtime.RemainingTimeSec,
+            runtime.Data.Name, bossHealth, runtime.Data.Boss?.Health ?? 0,
+            dashCooldownMs, _nativeReady);
+
+        PixelRenderer.EndFrame();
     }
 
     private static bool InBounds(LevelRuntime runtime, int x, int y) => x >= 0 && y >= 0 && x < runtime.Width && y < runtime.Height;
 
-    private static void DrawTile(char tile)
-    {
-        Console.ForegroundColor = tile switch
-        {
-            '#' or '=' => ConsoleColor.DarkGray,
-            '^' => ConsoleColor.Red,
-            '*' => ConsoleColor.Yellow,
-            'C' => ConsoleColor.Green,
-            'E' => ConsoleColor.Cyan,
-            '@' => ConsoleColor.White,
-            'M' => ConsoleColor.Magenta,
-            'B' => ConsoleColor.DarkRed,
-            _ => ConsoleColor.Gray
-        };
-        Console.Write(tile);
-    }
-
     private void DrawIntro()
     {
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("=== NEON TYRANT // CYBER FORTRESS BREACH ===");
-        Console.ResetColor();
-        Console.WriteLine("Enter pilot tag:");
-        var input = Console.ReadLine();
-        if (!string.IsNullOrWhiteSpace(input))
+        var nameBuffer = "";
+        var enteringName = true;
+
+        while (!Raylib.WindowShouldClose())
         {
-            _playerName = input.Trim();
+            if (enteringName)
+            {
+                int ch;
+                while ((ch = Raylib.GetCharPressed()) != 0)
+                {
+                    if (nameBuffer.Length < 20 && ch >= 32 && ch < 127)
+                        nameBuffer += (char)ch;
+                }
+                if (Raylib.IsKeyPressed(KeyboardKey.Backspace) && nameBuffer.Length > 0)
+                    nameBuffer = nameBuffer[..^1];
+                if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+                {
+                    if (!string.IsNullOrWhiteSpace(nameBuffer))
+                        _playerName = nameBuffer.Trim();
+                    enteringName = false;
+                }
+            }
+            else
+            {
+                if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    break;
+            }
+
+            PixelRenderer.BeginFrame();
+
+            Raylib.DrawText("=== NEON TYRANT ===", 120, 50, 20, new Color(0, 255, 255, 255));
+            Raylib.DrawText("// CYBER FORTRESS BREACH //", 110, 80, 10, new Color(0, 180, 220, 255));
+
+            if (enteringName)
+            {
+                Raylib.DrawText("Enter pilot tag:", 160, 130, 10, Color.White);
+                var cursor = ((int)(Raylib.GetTime() * 3) % 2 == 0) ? "_" : " ";
+                Raylib.DrawText(nameBuffer + cursor, 160, 150, 10, new Color(0, 255, 136, 255));
+            }
+            else
+            {
+                Raylib.DrawText($"Pilot: {_playerName}", 160, 130, 10, new Color(0, 255, 136, 255));
+                Raylib.DrawText("Press ENTER to deploy.", 150, 160, 10, Color.White);
+            }
+
+            Raylib.DrawText("Controls:", 100, 200, 10, new Color(100, 100, 120, 255));
+            Raylib.DrawText("A/D = Move   W/SPACE = Jump+Attack", 100, 214, 10, new Color(100, 100, 120, 255));
+            Raylib.DrawText("Q = Dash     ESC = Pause", 100, 228, 10, new Color(100, 100, 120, 255));
+
+            PixelRenderer.EndFrame();
         }
-        Console.WriteLine("Press ENTER to deploy.");
-        Console.ReadLine();
     }
 
     private void DrawOutro()
     {
-        SafeConsole.TryClear();
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("=== MISSION REPORT ===");
-        Console.ResetColor();
-        Console.WriteLine($"Pilot: {_playerName}");
-        Console.WriteLine($"Score: {_score}");
-        Console.WriteLine($"Levels Cleared: {_levelsCompleted} / {_levels.Count}");
-        Console.WriteLine($"Time: {_totalElapsedMs / 1000.0:F1}s");
         var stats = _scoreService.TryLoadStats();
-        if (stats is not null)
-        {
-            Console.WriteLine($"Career: Runs {stats.TotalRuns} | Best {stats.BestScore} | Avg {stats.AverageScore}");
-        }
-        Console.WriteLine();
-        Console.WriteLine("Top Scores:");
         var top = _scoreService.LoadTop();
-        if (top.Count == 0)
+
+        while (!Raylib.WindowShouldClose())
         {
-            Console.WriteLine("  (no scores yet)");
-        }
-        else
-        {
-            for (var i = 0; i < top.Count; i++)
+            if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+                break;
+
+            PixelRenderer.BeginFrame();
+
+            Raylib.DrawText("=== MISSION REPORT ===", 130, 20, 20, new Color(0, 255, 255, 255));
+            Raylib.DrawText($"Pilot: {_playerName}", 60, 60, 10, new Color(0, 255, 136, 255));
+            Raylib.DrawText($"Score: {_score}", 60, 76, 10, new Color(255, 255, 0, 255));
+            Raylib.DrawText($"Levels Cleared: {_levelsCompleted} / {_levels.Count}", 60, 92, 10, Color.White);
+            Raylib.DrawText($"Time: {_totalElapsedMs / 1000.0:F1}s", 60, 108, 10, Color.White);
+
+            if (stats is not null)
             {
-                var s = top[i];
-                Console.WriteLine($"  {i + 1}. {s.Name,-10} {s.Score,6} pts  L{s.LevelReached}  {s.TimeMs / 1000.0:F1}s");
+                Raylib.DrawText($"Career: Runs {stats.TotalRuns} | Best {stats.BestScore} | Avg {stats.AverageScore}",
+                    60, 128, 10, new Color(0, 160, 200, 255));
             }
+
+            Raylib.DrawText("Top Scores:", 60, 152, 10, new Color(255, 0, 255, 255));
+            if (top.Count == 0)
+            {
+                Raylib.DrawText("  (no scores yet)", 60, 168, 10, new Color(100, 100, 120, 255));
+            }
+            else
+            {
+                for (var i = 0; i < top.Count; i++)
+                {
+                    var s = top[i];
+                    Raylib.DrawText($"  {i + 1}. {s.Name,-10} {s.Score,6} pts  L{s.LevelReached}  {s.TimeMs / 1000.0:F1}s",
+                        60, 168 + i * 14, 10, new Color(200, 200, 220, 255));
+                }
+            }
+
+            Raylib.DrawText("Press ENTER to exit.", 160, 250, 10, Color.White);
+
+            PixelRenderer.EndFrame();
         }
-        Console.WriteLine();
-        Console.WriteLine("Press ENTER to exit.");
-        Console.ReadLine();
     }
 
-    private void ShowPauseScreen()
+    private static void ShowPauseScreen()
     {
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.WriteLine("PAUSED - Press ESC to continue");
-        Console.ResetColor();
-        while (true)
+        while (!Raylib.WindowShouldClose())
         {
-            if (!SafeConsole.TryKeyAvailable(out var available))
-            {
-                Thread.Sleep(20);
-                continue;
-            }
-
-            if (!available)
-            {
-                Thread.Sleep(20);
-                continue;
-            }
-
-            if (!SafeConsole.TryReadKey(intercept: true, out var keyInfo))
-            {
-                Thread.Sleep(20);
-                continue;
-            }
-
-            var key = keyInfo.Key;
-            if (key == ConsoleKey.Escape)
-            {
+            if (Raylib.IsKeyPressed(KeyboardKey.Escape))
                 break;
-            }
+
+            PixelRenderer.BeginFrame();
+            Raylib.DrawText("=== PAUSED ===", 170, 110, 20, new Color(255, 200, 0, 255));
+            Raylib.DrawText("Press ESC to continue", 155, 150, 10, Color.White);
+            PixelRenderer.EndFrame();
         }
     }
 

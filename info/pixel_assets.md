@@ -1,12 +1,12 @@
-# ASCII Asset Storage
+# Pixel Asset Storage
 
 ## Purpose
-This project now includes a structured data pack for ASCII character visuals.
+This project includes a structured data pack for pixel character visuals used by the Raylib window renderer.
 
 ## Location
-- `data/ascii_chars/manifest.json`
-- `data/ascii_chars/sprites/*.txt`
-- `data/ascii_chars/pixels/*.ppm`
+- `data/pixel_chars/manifest.json`
+- `data/pixel_chars/sprites/*.txt`
+- `data/pixel_chars/pixels/*.ppm`
 
 ## Asset Types
 - Sprite text (`.txt`): character layout using ASCII symbols

@@ -1,14 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>NeonTyrant</AssemblyName>
     <RootNamespace>NeonTyrant</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\\assets\\**\\*" Link="assets\\%(RecursiveDir)%(Filename)%(Extension)">
+    <PackageReference Include="Raylib-cs" Version="6.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\**\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

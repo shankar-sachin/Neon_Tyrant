@@ -39,7 +39,7 @@ echo [4/4] Building C# game...
 dotnet build game_cs\NeonTyrant.csproj -c Release
 if not "%ERRORLEVEL%"=="0" exit /b %ERRORLEVEL%
 
-set OUTPUT=game_cs\bin\Release\net8.0
+set OUTPUT=game_cs\bin\Release\net8.0\win-x64
 if "%HAS_CL%"=="1" (
   copy /Y build\physics.dll %OUTPUT%\physics.dll >nul
   copy /Y build\score_store.exe %OUTPUT%\score_store.exe >nul

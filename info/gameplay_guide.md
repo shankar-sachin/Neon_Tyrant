@@ -1,5 +1,7 @@
 # Gameplay Guide
 
+Neon Tyrant gameplay runs inside a Raylib window (`game_cs/src/Program.cs`) with keyboard input handled per frame.
+
 ## Controls
 - `A` / `D`: move left/right
 - `W` or `Space`: jump and attack input

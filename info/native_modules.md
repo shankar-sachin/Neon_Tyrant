@@ -1,7 +1,7 @@
 # Native Modules
 
 ## Overview
-Neon Tyrant uses optional native modules for performance and gameplay smoothing.
+Neon Tyrant uses optional native modules for performance and gameplay smoothing while rendering via Raylib in a desktop window.
 
 ## C++ (`native_cpp`)
 - Exposes `physics.dll` through `native_cpp/include/physics_api.h`
@@ -21,6 +21,7 @@ Neon Tyrant uses optional native modules for performance and gameplay smoothing.
 
 ## Bridge Layer
 - `game_cs/src/NativePhysicsBridge.cs` calls native APIs via P/Invoke.
+- The bridge is used from the Raylib game loop in `game_cs/src/Game.cs`.
 - If native binaries are absent, managed fallback logic is used.
 
 ## Build Notes

@@ -37,7 +37,7 @@ Write-Host "[4/4] Building C# game..."
 dotnet build game_cs/NeonTyrant.csproj -c Release
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$output = "game_cs/bin/Release/net8.0"
+$output = "game_cs/bin/Release/net8.0/win-x64"
 if ($hasCl) {
     Copy-Item -Force build\physics.dll "$output/physics.dll"
     Copy-Item -Force build\score_store.exe "$output/score_store.exe"

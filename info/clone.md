@@ -10,6 +10,7 @@ cd TyrantErr
 - Windows 10/11 recommended
 - .NET 8 SDK or newer
 - Python 3
+- Raylib runtime is pulled through NuGet (`Raylib-cs`) during restore/build
 - Optional: MSVC Build Tools (`cl.exe`) for native C/C++ modules
 
 ## 3. Build
@@ -38,6 +39,8 @@ PowerShell:
 ```powershell
 ./scripts/run.ps1
 ```
+
+Running launches the game as a Raylib window (see `game_cs/src/Program.cs`).
 
 ## 5. Clean
 ```bat
