@@ -91,6 +91,7 @@ public sealed class EnemyRuntime
     public float Right { get; set; }
     public float Speed { get; set; }
     public int Direction { get; set; } = 1;
+    public int TurnDelayMs { get; set; }
 }
 
 public sealed class LevelRuntime

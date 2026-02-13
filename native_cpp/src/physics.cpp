@@ -1,16 +1,14 @@
-#include "../include/physics_api.h"
+#include "physics_internal.h"
 
 #include <algorithm>
 #include <cmath>
 
-namespace {
 NtWorldConfig g_cfg = {28.0f, -10.5f, 16.0f};
 bool g_ready = false;
 
-bool intersects(const NtAabb* a, const NtAabb* b) {
+bool nt_intersects(const NtAabb* a, const NtAabb* b) {
     return !(a->x + a->w <= b->x || a->x >= b->x + b->w || a->y + a->h <= b->y || a->y >= b->y + b->h);
 }
-}  // namespace
 
 extern "C" {
 
@@ -53,7 +51,7 @@ int nt_resolve_player_move(const NtAabb* player, float dx, float dy, const NtAab
     out->collidedX = 0;
     out->collidedY = 0;
 
-    if (!intersects(&next, obstacle)) {
+    if (!nt_intersects(&next, obstacle)) {
         return 0;
     }
 
@@ -80,7 +78,7 @@ int nt_check_hazard_overlap(const NtAabb* player, const NtAabb* hazard, int* hit
     if (!g_ready || player == nullptr || hazard == nullptr || hit == nullptr) {
         return -1;
     }
-    *hit = intersects(player, hazard) ? 1 : 0;
+    *hit = nt_intersects(player, hazard) ? 1 : 0;
     return 0;
 }
 
@@ -88,7 +86,7 @@ int nt_boss_hit_test(const NtAabb* attack, const NtAabb* boss, int* bossHit) {
     if (!g_ready || attack == nullptr || boss == nullptr || bossHit == nullptr) {
         return -1;
     }
-    *bossHit = intersects(attack, boss) ? 1 : 0;
+    *bossHit = nt_intersects(attack, boss) ? 1 : 0;
     return 0;
 }
 

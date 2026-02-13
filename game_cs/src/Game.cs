@@ -66,11 +66,15 @@ public sealed class Game
         var velocityY = 0f;
         var invincibleMs = 0;
         var bossX = runtime.Data.Boss?.X ?? -999f;
-        var bossY = runtime.Data.Boss?.Y ?? -999f;
+        var bossBaseY = runtime.Data.Boss?.Y ?? -999f;
+        var bossY = bossBaseY;
         var bossHealth = runtime.Data.Boss?.Health ?? 0;
         var bossDir = 1f;
         var facingDir = 1f;
         var dashCooldownMs = 0;
+        var coyoteMs = 0;
+        var jumpBufferMs = 0;
+        var bossMotionElapsedMs = 0;
 
         var timer = Stopwatch.StartNew();
         var frameClock = Stopwatch.StartNew();
@@ -86,7 +90,11 @@ public sealed class Game
             }
 
             var dt = FrameMs / 1000f;
-            var step = NativePhysicsBridge.Step(dt, velocityY, input.JumpPressed, IsGrounded(runtime, playerX, playerY));
+            var groundedNow = IsGrounded(runtime, playerX, playerY);
+            var jumpAssist = NativePhysicsBridge.UpdateJumpAssist(dt, input.JumpPressed, groundedNow, coyoteMs, jumpBufferMs);
+            coyoteMs = jumpAssist.CoyoteMs;
+            jumpBufferMs = jumpAssist.JumpBufferMs;
+            var step = NativePhysicsBridge.Step(dt, velocityY, jumpAssist.ConsumeJump == 1, groundedNow);
             velocityY = step.VelocityY;
 
             var moveX = 0f;
@@ -117,14 +125,23 @@ public sealed class Game
                 var speed = bossHealth > runtime.Data.Boss.Health / 2
                     ? runtime.Data.Boss.PhaseSpeed[0]
                     : runtime.Data.Boss.PhaseSpeed[Math.Min(1, runtime.Data.Boss.PhaseSpeed.Count - 1)];
-                bossX += speed * bossDir * dt;
+                bossMotionElapsedMs += FrameMs;
                 var leftBound = 4f;
                 var rightBound = runtime.Width - 4f;
-                if (bossX < leftBound || bossX > rightBound)
-                {
-                    bossDir *= -1f;
-                    bossX = Math.Clamp(bossX, leftBound, rightBound);
-                }
+                var bossStep = NativePhysicsBridge.UpdateBossMotion(
+                    dt,
+                    bossX,
+                    bossBaseY,
+                    bossDir,
+                    leftBound,
+                    rightBound,
+                    speed,
+                    bossHealth,
+                    runtime.Data.Boss.Health,
+                    bossMotionElapsedMs);
+                bossX = bossStep.X;
+                bossY = bossStep.Y;
+                bossDir = bossStep.Dir;
 
                 if (input.ActionPressed)
                 {
@@ -311,12 +328,19 @@ public sealed class Game
     {
         foreach (var enemy in runtime.Enemies)
         {
-            enemy.X += enemy.Speed * enemy.Direction * dt;
-            if (enemy.X <= enemy.Left || enemy.X >= enemy.Right)
+            var state = new NativePhysicsBridge.NtEnemyState
             {
-                enemy.Direction *= -1;
-                enemy.X = Math.Clamp(enemy.X, enemy.Left, enemy.Right);
-            }
+                X = enemy.X,
+                Left = enemy.Left,
+                Right = enemy.Right,
+                Speed = enemy.Speed,
+                Direction = enemy.Direction,
+                TurnDelayMs = enemy.TurnDelayMs
+            };
+            var next = NativePhysicsBridge.UpdateEnemyPatrol(dt, state);
+            enemy.X = next.X;
+            enemy.Direction = next.Direction;
+            enemy.TurnDelayMs = next.TurnDelayMs;
         }
     }
 
