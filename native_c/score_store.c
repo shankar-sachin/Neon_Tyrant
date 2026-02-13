@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static int load_scores(const char* path) {
+    FILE* fp = fopen(path, "r");
+    if (fp == NULL) {
+        return 0;
+    }
+
+    char line[512];
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        fputs(line, stdout);
+    }
+    fclose(fp);
+    return 0;
+}
+
+static int save_score(const char* path, const char* name, const char* score, const char* level, const char* time_ms) {
+    FILE* fp = fopen(path, "a");
+    if (fp == NULL) {
+        return 2;
+    }
+
+    fprintf(fp, "%s,%s,%s,%s\n", name, score, level, time_ms);
+    fclose(fp);
+    return 0;
+}
+
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        fprintf(stderr, "Usage: score_store.exe load <path> | save <path> <name> <score> <level> <time_ms>\n");
+        return 1;
+    }
+
+    if (strcmp(argv[1], "load") == 0) {
+        return load_scores(argv[2]);
+    }
+
+    if (strcmp(argv[1], "save") == 0) {
+        if (argc < 7) {
+            fprintf(stderr, "Missing save arguments.\n");
+            return 1;
+        }
+        return save_score(argv[2], argv[3], argv[4], argv[5], argv[6]);
+    }
+
+    fprintf(stderr, "Unknown command: %s\n", argv[1]);
+    return 1;
+}
