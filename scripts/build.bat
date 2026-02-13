@@ -43,6 +43,9 @@ set OUTPUT=game_cs\bin\Release\net8.0
 if "%HAS_CL%"=="1" (
   copy /Y build\physics.dll %OUTPUT%\physics.dll >nul
   copy /Y build\score_store.exe %OUTPUT%\score_store.exe >nul
+ ) else (
+  if exist %OUTPUT%\physics.dll del /q %OUTPUT%\physics.dll >nul 2>nul
+  if exist %OUTPUT%\score_store.exe del /q %OUTPUT%\score_store.exe >nul 2>nul
 )
 
 if "%HAS_CL%"=="1" (

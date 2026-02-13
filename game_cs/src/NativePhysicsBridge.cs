@@ -46,6 +46,14 @@ public static class NativePhysicsBridge
         public int CollidedY;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NtDashResult
+    {
+        public float MoveX;
+        public int CooldownMs;
+        public int DidDash;
+    }
+
     private static readonly bool NativeAvailable;
 
     static NativePhysicsBridge()
@@ -137,6 +145,33 @@ public static class NativePhysicsBridge
         return hit == 1;
     }
 
+    public static NtDashResult ComputeDash(float dt, bool dashPressed, float facingDir, int cooldownMs)
+    {
+        if (!NativeAvailable)
+        {
+            var nextCooldown = Math.Max(0, cooldownMs - (int)(dt * 1000));
+            if (dashPressed && nextCooldown == 0)
+            {
+                return new NtDashResult
+                {
+                    MoveX = (facingDir < 0 ? -1f : 1f) * 2.6f,
+                    CooldownMs = 900,
+                    DidDash = 1
+                };
+            }
+
+            return new NtDashResult
+            {
+                MoveX = 0,
+                CooldownMs = nextCooldown,
+                DidDash = 0
+            };
+        }
+
+        nt_compute_dash(dt, dashPressed ? 1 : 0, facingDir, cooldownMs, out var result);
+        return result;
+    }
+
     [DllImport("physics.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern int nt_init_world(ref NtWorldConfig cfg);
 
@@ -151,6 +186,9 @@ public static class NativePhysicsBridge
 
     [DllImport("physics.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern int nt_boss_hit_test(ref NtAabb attack, ref NtAabb boss, out int bossHit);
+
+    [DllImport("physics.dll", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int nt_compute_dash(float dt, int dashPressed, float facingDir, int cooldownMs, out NtDashResult result);
 
     [DllImport("physics.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern void nt_shutdown_world();

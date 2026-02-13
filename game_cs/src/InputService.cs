@@ -1,6 +1,12 @@
 namespace NeonTyrant;
 
-public readonly record struct FrameInput(bool Left, bool Right, bool JumpPressed, bool ActionPressed, bool EscapePressed);
+public readonly record struct FrameInput(
+    bool Left,
+    bool Right,
+    bool JumpPressed,
+    bool ActionPressed,
+    bool DashPressed,
+    bool EscapePressed);
 
 public static class InputService
 {
@@ -10,6 +16,7 @@ public static class InputService
         var right = false;
         var jump = false;
         var action = false;
+        var dash = false;
         var escape = false;
 
         while (SafeConsole.TryKeyAvailable(out var available) && available)
@@ -33,12 +40,15 @@ public static class InputService
                     jump = true;
                     action = true;
                     break;
+                case ConsoleKey.Q:
+                    dash = true;
+                    break;
                 case ConsoleKey.Escape:
                     escape = true;
                     break;
             }
         }
 
-        return new FrameInput(left, right, jump, action, escape);
+        return new FrameInput(left, right, jump, action, dash, escape);
     }
 }

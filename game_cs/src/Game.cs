@@ -69,6 +69,8 @@ public sealed class Game
         var bossY = runtime.Data.Boss?.Y ?? -999f;
         var bossHealth = runtime.Data.Boss?.Health ?? 0;
         var bossDir = 1f;
+        var facingDir = 1f;
+        var dashCooldownMs = 0;
 
         var timer = Stopwatch.StartNew();
         var frameClock = Stopwatch.StartNew();
@@ -91,11 +93,17 @@ public sealed class Game
             if (input.Left)
             {
                 moveX -= MoveSpeed * dt;
+                facingDir = -1f;
             }
             if (input.Right)
             {
                 moveX += MoveSpeed * dt;
+                facingDir = 1f;
             }
+
+            var dashResult = NativePhysicsBridge.ComputeDash(dt, input.DashPressed, facingDir, dashCooldownMs);
+            dashCooldownMs = dashResult.CooldownMs;
+            moveX += dashResult.MoveX;
 
             var hitGround = MoveWithCollision(runtime, ref playerX, ref playerY, moveX, step.MoveY);
             if (hitGround && velocityY > 0)
@@ -194,7 +202,7 @@ public sealed class Game
             }
 
             invincibleMs -= FrameMs;
-            DrawFrame(runtime, levelIndex + 1, playerX, playerY, bossX, bossY, bossHealth, invincibleMs > 0);
+            DrawFrame(runtime, levelIndex + 1, playerX, playerY, bossX, bossY, bossHealth, dashCooldownMs, invincibleMs > 0);
 
             var elapsed = frameClock.ElapsedMilliseconds - frameStart;
             if (elapsed < FrameMs)
@@ -403,7 +411,7 @@ public sealed class Game
         H = PlayerHeight
     };
 
-    private void DrawFrame(LevelRuntime runtime, int levelNumber, float playerX, float playerY, float bossX, float bossY, int bossHealth, bool blinkPlayer)
+    private void DrawFrame(LevelRuntime runtime, int levelNumber, float playerX, float playerY, float bossX, float bossY, int bossHealth, int dashCooldownMs, bool blinkPlayer)
     {
         if (_supportsCursorRepaint)
         {
@@ -449,6 +457,15 @@ public sealed class Game
         else
         {
             Console.WriteLine("Boss HP: --");
+        }
+
+        if (dashCooldownMs <= 0)
+        {
+            Console.WriteLine("Dash: READY");
+        }
+        else
+        {
+            Console.WriteLine($"Dash: {dashCooldownMs / 1000.0:F1}s");
         }
 
         var px = (int)MathF.Round(playerX);
@@ -513,6 +530,11 @@ public sealed class Game
         Console.WriteLine($"Score: {_score}");
         Console.WriteLine($"Levels Cleared: {_levelsCompleted} / {_levels.Count}");
         Console.WriteLine($"Time: {_totalElapsedMs / 1000.0:F1}s");
+        var stats = _scoreService.TryLoadStats();
+        if (stats is not null)
+        {
+            Console.WriteLine($"Career: Runs {stats.TotalRuns} | Best {stats.BestScore} | Avg {stats.AverageScore}");
+        }
         Console.WriteLine();
         Console.WriteLine("Top Scores:");
         var top = _scoreService.LoadTop();

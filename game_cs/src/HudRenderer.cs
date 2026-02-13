@@ -25,7 +25,7 @@ public static class HudRenderer
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("Controls: ");
         Console.ResetColor();
-        Console.Write("A/D move | W/SPACE jump+attack | ESC pause");
+        Console.Write("A/D move | W/SPACE jump+attack | Q dash | ESC pause");
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine("Tiles: # wall  ^ hazard  * data shard  C checkpoint  E exit  M drone  B boss");

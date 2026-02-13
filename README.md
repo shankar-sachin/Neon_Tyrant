@@ -1,4 +1,4 @@
-# Neon Tyrant
+# Neon Tyrant (Former name TyrantErr)
 
 Windows multi-language console game with multiple levels.
 
@@ -8,6 +8,7 @@ Windows multi-language console game with multiple levels.
 - C utility for score persistence
 - Python for level validation
 - BAT scripts for Windows build/run/clean
+- PowerShell and shell scripts for smoother local workflow
 
 ## Prerequisites
 - Windows 10/11
@@ -29,19 +30,34 @@ scripts\build.bat
 ```
 If `cl.exe` is missing, the game still builds and runs in managed fallback mode.
 
+PowerShell:
+```powershell
+./scripts/build.ps1
+```
+
+Shell:
+```bash
+./scripts/build.sh
+```
+
 ## Run
 ```bat
 scripts\run.bat
 ```
+PowerShell: `./scripts/run.ps1`  
+Shell: `./scripts/run.sh`
 
 ## Clean
 ```bat
 scripts\clean.bat
 ```
+PowerShell: `./scripts/clean.ps1`  
+Shell: `./scripts/clean.sh`
 
 ## Controls
 - `A` / `D`: move
 - `W` or `Space`: jump and attack
+- `Q`: dash burst (cooldown based)
 - `Esc`: pause
 
 ## Notes

@@ -76,6 +76,13 @@ public sealed class ScoreEntry
     public int TimeMs { get; init; }
 }
 
+public sealed class ScoreStats
+{
+    public int TotalRuns { get; init; }
+    public int BestScore { get; init; }
+    public int AverageScore { get; init; }
+}
+
 public sealed class EnemyRuntime
 {
     public float X { get; set; }

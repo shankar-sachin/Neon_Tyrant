@@ -1,6 +1,7 @@
 #include "../include/physics_api.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace {
 NtWorldConfig g_cfg = {28.0f, -10.5f, 16.0f};
@@ -88,6 +89,28 @@ int nt_boss_hit_test(const NtAabb* attack, const NtAabb* boss, int* bossHit) {
         return -1;
     }
     *bossHit = intersects(attack, boss) ? 1 : 0;
+    return 0;
+}
+
+int nt_compute_dash(float dt, int dashPressed, float facingDir, int cooldownMs, NtDashResult* out) {
+    if (!g_ready || out == nullptr || dt <= 0.0f) {
+        return -1;
+    }
+
+    constexpr float kDashDistance = 2.6f;
+    constexpr int kDashCooldownMs = 900;
+    int nextCooldownMs = std::max(0, cooldownMs - static_cast<int>(dt * 1000.0f));
+    const float normalizedFacing = (facingDir < 0.0f) ? -1.0f : 1.0f;
+
+    out->moveX = 0.0f;
+    out->didDash = 0;
+    out->cooldownMs = nextCooldownMs;
+
+    if (dashPressed == 1 && nextCooldownMs == 0) {
+        out->moveX = normalizedFacing * kDashDistance;
+        out->didDash = 1;
+        out->cooldownMs = kDashCooldownMs;
+    }
     return 0;
 }
 

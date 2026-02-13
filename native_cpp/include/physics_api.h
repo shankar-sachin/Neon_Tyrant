@@ -41,11 +41,18 @@ typedef struct NtCollisionResult {
     int collidedY;
 } NtCollisionResult;
 
+typedef struct NtDashResult {
+    float moveX;
+    int cooldownMs;
+    int didDash;
+} NtDashResult;
+
 NT_EXPORT int nt_init_world(const NtWorldConfig* cfg);
 NT_EXPORT int nt_step_world(float dt, NtInput in, NtWorldSnapshot* out);
 NT_EXPORT int nt_resolve_player_move(const NtAabb* player, float dx, float dy, const NtAabb* obstacle, NtCollisionResult* out);
 NT_EXPORT int nt_check_hazard_overlap(const NtAabb* player, const NtAabb* hazard, int* hit);
 NT_EXPORT int nt_boss_hit_test(const NtAabb* attack, const NtAabb* boss, int* bossHit);
+NT_EXPORT int nt_compute_dash(float dt, int dashPressed, float facingDir, int cooldownMs, NtDashResult* out);
 NT_EXPORT void nt_shutdown_world(void);
 
 }
