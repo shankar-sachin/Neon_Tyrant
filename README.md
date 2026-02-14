@@ -32,6 +32,8 @@ If you want Neon Tyrant as a normal installed Windows app (Start Menu/Desktop sh
 #### Faster Way
 - Just go to build/ and download the .msi file, then double click it to run
 
+#### WiX Toolset Way
+
 - Install **WiX Toolset 6.0.2** and ensure `wix.exe` is in `PATH`
 - Ensure your portable app files are in `app/` (including `NeonTyrant.exe`)
 - Run:
