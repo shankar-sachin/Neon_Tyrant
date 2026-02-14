@@ -4,6 +4,11 @@ Windows multi-language platformer running in a Raylib window.
 
 ![Demo](data/images/demo.gif)
 
+## How to Use
+- Go to [landing page](https://tinyurl.com/neontyrant)
+- Go to [latest release page](https://github.com/shankar-sachin/neon-tyrant/releases/tag/v1.0.1)
+- Click download and double-click the installer to download application
+
 ## Stack
 - C# (.NET 8) for game loop and level flow
 - Raylib-cs (`Raylib-cs` NuGet package) for window creation, drawing, and input
@@ -23,14 +28,11 @@ Windows multi-language platformer running in a Raylib window.
 
 ## How to Play
 
-### Option 1: Run the .exe (no setup required)
-Go to the `app/` folder and run **`NeonTyrant.exe`** — that's the only file you need to double-click. No .NET SDK or build tools needed; everything is bundled into a single self-contained executable.
+### Option 1: Run the .msi (no setup required)
+Go to the [landing page](https://tinyurl.com/neon-tyrant) or the [latest release notes](https://github.com/shankar-sachin/neon-tyrant/releases/tag/v1.0.1) to download the `.msi` application. Double click it and follow the steps on the setup wizard.
 
-### Option 1.5: Install with MSI (WiX)
+### Option 1.5: Install with WiX (complicated and useless way, just download the MSI from the [landing page](https://www.tinyurl.com/neon-tyrant))
 If you want Neon Tyrant as a normal installed Windows app (Start Menu/Desktop shortcuts + Add/Remove Programs entry), build the MSI installer with WiX:
-
-#### Faster Way
-- Just go to build/ and download the .msi file, then double click it to run
 
 #### WiX Toolset Way
 
@@ -86,14 +88,16 @@ scripts\clean.bat
 PowerShell: `./scripts/clean.ps1`  
 Shell: `./scripts/clean.sh`
 
-#### Controls
+## Controls
 - `A` / `D`: move
 - `W` or `Space`: jump and attack
 - `Q`: dash burst (cooldown based)
 - `Esc`: pause
 
-#### Notes
+## Notes
 - Level data is stored in `assets/levels/`.
 - High scores are persisted in `data/scores.csv`.
 - Native features are auto-enabled when `physics.dll` and `score_store.exe` are present.
 - The main window entrypoint is `game_cs/src/Program.cs` (`Raylib.InitWindow(...)`).
+
+*Last updated Feb. 14, 2026 at 2:20 PM*
