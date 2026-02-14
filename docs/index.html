@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Tyrant</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="scanlines">
+    <div id="boot-loader" class="boot-loader" aria-live="polite">
+    <div class="boot-panel">
+      <div class="boot-title">NEON TYRANT</div>
+      <div class="boot-sub">Booting fortress breach systems...</div>
+      <div class="pixel-row" aria-hidden="true">
+        <span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span>
+        <span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span>
+        <span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span>
+      </div>
+      <div class="boot-progress">
+        <div id="boot-progress-fill" class="boot-progress-fill"></div>
+      </div>
+      <div id="boot-status" class="boot-status">Loading assets...</div>
+    </div>
+  </div>
+  <main class="wrap">
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <span class="badge">Available for Windows 10 & 11</span>
+        <h1>Neon Tyrant</h1>
+        <p>
+          Breach the cyber fortress in this pixel-style action platformer. Fight patrol units,
+          dodge hazards, and break through all levels with your pilot loadout.
+        </p>
+        <div class="install-label">Install Latest Version</div>
+        <a id="install-btn" class="cta pulse" href="../build/dist/NeonTyrant-1.0.1-x64.msi">Install Latest Version</a>
+        <div class="cta-note">Download the MSI, run it, and it will upgrade existing installs.</div>
+      </div>
+      <aside class="preview reveal">
+        <img src="./assets/demo.gif" alt="Neon Tyrant gameplay demo" />
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="card reveal">
+        <strong>Action</strong>
+        <span>Dash, jump, and strike through neon combat arenas.</span>
+      </article>
+      <article class="card reveal">
+        <strong>Bosses</strong>
+        <span>Face staged boss fights with escalating movement patterns.</span>
+      </article>
+      <article class="card reveal">
+        <strong>Progress</strong>
+        <span>Track runs, highscores, and overall mission performance.</span>
+      </article>
+    </section>
+
+    <section class="about reveal">
+      <h2>About Neon Tyrant</h2>
+      <p>
+        Neon Tyrant is a Windows-first action platformer built with C#, Raylib, and native modules for
+        game physics and score persistence. The game focuses on fast, readable movement, tight arena combat,
+        and compact levels you can replay for cleaner runs.
+      </p>
+      <p>
+        This page is the install portal for stable MSI releases. Install over an existing version to update.
+      </p>
+    </section>
+
+    <footer>
+      Built for Windows 10/11. Installer target: ARM & x64, coming to macOS soon. Built by Sachin Shankar.
+    </footer>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
