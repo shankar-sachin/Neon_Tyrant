@@ -10,7 +10,7 @@ public sealed class Game
     private const float MoveSpeed = 7.4f;
     private const float FatalLandingVelocity = 13.5f;
 
-    private readonly ScoreService _scoreService = new(AppContext.BaseDirectory);
+    private readonly ScoreService _scoreService = new();
     private readonly GameConfig _config;
     private readonly List<LevelData> _levels;
     private readonly bool _nativeReady;

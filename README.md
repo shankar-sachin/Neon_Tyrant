@@ -26,6 +26,28 @@ Windows multi-language platformer running in a Raylib window.
 ### Option 1: Run the .exe (no setup required)
 Go to the `app/` folder and run **`NeonTyrant.exe`** — that's the only file you need to double-click. No .NET SDK or build tools needed; everything is bundled into a single self-contained executable.
 
+### Option 1.5: Install with MSI (WiX)
+If you want Neon Tyrant as a normal installed Windows app (Start Menu/Desktop shortcuts + Add/Remove Programs entry), build the MSI installer with WiX:
+
+#### Faster Way
+- Just go to build/ and download the .msi file, then double click it to run
+
+- Install **WiX Toolset 6.0.2** and ensure `wix.exe` is in `PATH`
+- Ensure your portable app files are in `app/` (including `NeonTyrant.exe`)
+- Run:
+
+```bat
+scripts\build_installer.bat 1.0.0
+```
+
+PowerShell:
+```powershell
+./scripts/build_installer.ps1 -Version 1.0.0
+```
+
+Installer output:
+- `build/dist/NeonTyrant-1.0.0-x64.msi`
+
 ### Option 2: Build and run locally
 - Use `git clone https://github.com/atom-bowl/TyrantErr.git` to clone the repository
 - Run `scripts\build.bat` to build the project

@@ -17,8 +17,7 @@ public sealed class GameConfig
     [JsonPropertyName("setupCompleted")]
     public bool SetupCompleted { get; set; }
 
-    private static readonly string FilePath =
-        Path.Combine(AppContext.BaseDirectory, "data", "config.json");
+    private static readonly string FilePath = AppPaths.ConfigPath;
 
     public static GameConfig? TryLoad()
     {
