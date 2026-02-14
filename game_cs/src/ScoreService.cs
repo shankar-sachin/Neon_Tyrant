@@ -10,7 +10,7 @@ public sealed class ScoreService
     public ScoreService(string baseDir)
     {
         _exePath = Path.Combine(baseDir, "score_store.exe");
-        _scoreFilePath = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "data", "scores.csv"));
+        _scoreFilePath = Path.Combine(baseDir, "data", "scores.csv");
         Directory.CreateDirectory(Path.GetDirectoryName(_scoreFilePath)!);
     }
 

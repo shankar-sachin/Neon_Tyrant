@@ -8,6 +8,7 @@
     <RootNamespace>NeonTyrant</RootNamespace>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Raylib-cs" Version="6.1.1" />

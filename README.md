@@ -1,4 +1,4 @@
-# Neon Tyrant (Former name TyrantErr)
+# Neon Tyrant
 
 Windows multi-language platformer running in a Raylib window.
 
@@ -13,19 +13,24 @@ Windows multi-language platformer running in a Raylib window.
 
 ## Prerequisites
 - Windows 10/11
+- Note: All you need is Windows 10 or 11 if you're going to download the app, if you're building and running locally, you will need the prequisites listed below
 - .NET 8 SDK
 - Python 3 (`python` in PATH)
 - Optional: MSVC `cl.exe` (Visual Studio Build Tools) for native C/C++ modules
 
 
-## How to Use
-- Open an IDE like Visual Studio or CLion to get started
-- Use the command `git clone https://github.com/atom-bowl/TyrantErr.git` to clone the repository into your local
-- Go to the file `build.bat` and click Run
-- Then go to file `run.bat` and click Run
+## How to Play
+
+### Option 1: Run the .exe (no setup required)
+Go to the `app/` folder and run **`NeonTyrant.exe`** — that's the only file you need to double-click. No .NET SDK or build tools needed; everything is bundled into a single self-contained executable.
+
+### Option 2: Build and run locally
+- Use `git clone https://github.com/atom-bowl/TyrantErr.git` to clone the repository
+- Run `scripts\build.bat` to build the project
+- Run `scripts\run.bat` to launch the game
 - The game opens as a Raylib desktop window (`game_cs/src/Program.cs`)
 
-## Build
+#### Build
 ```bat
 scripts\build.bat
 ```
@@ -41,27 +46,27 @@ Shell:
 ./scripts/build.sh
 ```
 
-## Run
+#### Run
 ```bat
 scripts\run.bat
 ```
 PowerShell: `./scripts/run.ps1`  
 Shell: `./scripts/run.sh`
 
-## Clean
+#### Clean
 ```bat
 scripts\clean.bat
 ```
 PowerShell: `./scripts/clean.ps1`  
 Shell: `./scripts/clean.sh`
 
-## Controls
+#### Controls
 - `A` / `D`: move
 - `W` or `Space`: jump and attack
 - `Q`: dash burst (cooldown based)
 - `Esc`: pause
 
-## Notes
+#### Notes
 - Level data is stored in `assets/levels/`.
 - High scores are persisted in `data/scores.csv`.
 - Native features are auto-enabled when `physics.dll` and `score_store.exe` are present.

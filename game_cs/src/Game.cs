@@ -11,17 +11,22 @@ public sealed class Game
     private const float FatalLandingVelocity = 13.5f;
 
     private readonly ScoreService _scoreService = new(AppContext.BaseDirectory);
+    private readonly GameConfig _config;
     private readonly List<LevelData> _levels;
     private readonly bool _nativeReady;
 
     private int _score;
-    private int _lives = 3;
+    private int _lives;
     private int _totalElapsedMs;
     private int _levelsCompleted;
     private string _playerName = "PLAYER";
 
-    public Game()
+    public Game(GameConfig config)
     {
+        _config = config;
+        _lives = config.Lives;
+        if (!string.IsNullOrWhiteSpace(config.PlayerName))
+            _playerName = config.PlayerName;
         _levels = LevelLoader.Load(Path.Combine(AppContext.BaseDirectory, "assets", "levels"));
         _nativeReady = NativePhysicsBridge.Initialize();
     }
@@ -475,7 +480,7 @@ public sealed class Game
 
     private void DrawIntro()
     {
-        var nameBuffer = "";
+        var nameBuffer = string.IsNullOrWhiteSpace(_config.PlayerName) ? "" : _config.PlayerName;
         var enteringName = true;
 
         while (!Raylib.WindowShouldClose())
@@ -526,6 +531,9 @@ public sealed class Game
 
             PixelRenderer.EndFrame();
         }
+
+        _config.PlayerName = _playerName;
+        _config.Save();
     }
 
     private void DrawOutro()

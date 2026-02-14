@@ -16,7 +16,12 @@
       "Bash(where:*)",
       "Bash(winget search:*)",
       "Bash(winget install:*)",
-      "Bash(cmd /c \"where zig 2>&1\")"
+      "Bash(cmd /c \"where zig 2>&1\")",
+      "Bash(./NeonTyrant.exe)",
+      "Bash(echo:*)",
+      "Bash(powershell -Command \"\n$WshShell = New-Object -ComObject WScript.Shell\n$Shortcut = $WshShell.CreateShortcut\\([System.IO.Path]::Combine\\([Environment]::GetFolderPath\\(''Desktop''\\), ''Neon Tyrant.lnk''\\)\\)\n$Shortcut.TargetPath = ''C:\\\\Users\\\\sachi\\\\Master_Coding\\\\Neon_Tyrant\\\\app\\\\NeonTyrant.exe''\n$Shortcut.WorkingDirectory = ''C:\\\\Users\\\\sachi\\\\Master_Coding\\\\Neon_Tyrant\\\\app''\n$Shortcut.Description = ''Neon Tyrant Game''\n$Shortcut.Save\\(\\)\nWrite-Host ''Desktop shortcut created''\n\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File scripts/generate_icon.ps1)",
+      "Bash(powershell -Command:*)"
     ]
   }
 }
