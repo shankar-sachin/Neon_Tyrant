@@ -13,10 +13,14 @@
   box-sizing: border-box;
 }
 
+a, button, input, select, textarea {
+  font: inherit;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: "Consolas", "Lucida Console", "Courier New", monospace;
   color: var(--text);
   background:
     radial-gradient(1200px 500px at 10% -10%, #1f495d 0%, transparent 60%),
