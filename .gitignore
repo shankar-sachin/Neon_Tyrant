@@ -2,3 +2,4 @@ game_cs/bin/
 game_cs/obj/
 data/scores.csv
 CLAUDE.md
+.claude/
