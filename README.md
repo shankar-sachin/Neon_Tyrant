@@ -2,6 +2,8 @@
 
 Windows multi-language platformer running in a Raylib window.
 
+![Demo](data/images/demo.gif)
+
 ## Stack
 - C# (.NET 8) for game loop and level flow
 - Raylib-cs (`Raylib-cs` NuGet package) for window creation, drawing, and input
