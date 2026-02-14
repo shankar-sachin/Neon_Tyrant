@@ -124,12 +124,25 @@ public sealed class Game
                 velocityY = 0;
             }
 
+            // Pit death: falling to bottom of level
+            if (playerY >= runtime.Height - 2.0f)
+            {
+                _lives--;
+                if (_lives <= 0)
+                    return new LevelResult(true, (int)timer.ElapsedMilliseconds);
+                playerX = checkpointX;
+                playerY = checkpointY;
+                velocityY = 0;
+                invincibleMs = 1250;
+            }
+
             UpdateEnemies(runtime, dt);
             if (runtime.Data.Boss is not null && bossHealth > 0)
             {
-                var speed = bossHealth > runtime.Data.Boss.Health / 2
-                    ? runtime.Data.Boss.PhaseSpeed[0]
-                    : runtime.Data.Boss.PhaseSpeed[Math.Min(1, runtime.Data.Boss.PhaseSpeed.Count - 1)];
+                var phaseCount = runtime.Data.Boss.PhaseSpeed.Count;
+                var healthRatio = (float)bossHealth / runtime.Data.Boss.Health;
+                var phaseIndex = Math.Min(phaseCount - 1, (int)((1f - healthRatio) * phaseCount));
+                var speed = runtime.Data.Boss.PhaseSpeed[phaseIndex];
                 bossMotionElapsedMs += frameMs;
                 var leftBound = 4f;
                 var rightBound = runtime.Width - 4f;
@@ -148,6 +161,9 @@ public sealed class Game
                 bossY = bossStep.Y;
                 bossDir = bossStep.Dir;
 
+                var bossW = runtime.Data.Boss.Size * 1.0f;
+                var bossH = runtime.Data.Boss.Size * 1.0f;
+
                 if (input.ActionPressed)
                 {
                     var attack = new NativePhysicsBridge.NtAabb
@@ -157,7 +173,7 @@ public sealed class Game
                         W = 1.2f,
                         H = 0.4f
                     };
-                    var boss = new NativePhysicsBridge.NtAabb { X = bossX, Y = bossY, W = 1.2f, H = 1.2f };
+                    var boss = new NativePhysicsBridge.NtAabb { X = bossX, Y = bossY, W = bossW, H = bossH };
                     if (NativePhysicsBridge.BossHit(attack, boss))
                     {
                         bossHealth = Math.Max(0, bossHealth - 1);
@@ -184,10 +200,12 @@ public sealed class Game
                 return new LevelResult(false, (int)timer.ElapsedMilliseconds);
             }
 
+            var hitBoss = runtime.Data.Boss is not null && bossHealth > 0 &&
+                NativePhysicsBridge.Intersects(playerBox,
+                    new NativePhysicsBridge.NtAabb { X = bossX, Y = bossY, W = runtime.Data.Boss.Size * 1.0f, H = runtime.Data.Boss.Size * 1.0f });
             var hitHazard = TouchesHazardTile(runtime, playerBox)
                 || TouchesEnemy(runtime, playerBox)
-                || (runtime.Data.Boss is not null && bossHealth > 0 &&
-                    NativePhysicsBridge.Intersects(playerBox, new NativePhysicsBridge.NtAabb { X = bossX, Y = bossY, W = 1.2f, H = 1.2f }));
+                || hitBoss;
             var tookDamage = tookFatalLanding || (hitHazard && invincibleMs <= 0);
             if (tookDamage)
             {
@@ -457,8 +475,11 @@ public sealed class Game
         {
             var bx = (int)MathF.Round(bossX);
             var by = (int)MathF.Round(bossY);
-            if (InBounds(runtime, bx, by))
-                PixelRenderer.DrawTile(bx, by, 'B');
+            var bossSize = runtime.Data.Boss.Size;
+            for (var dy = 0; dy < bossSize; dy++)
+                for (var dx = 0; dx < bossSize; dx++)
+                    if (InBounds(runtime, bx + dx, by + dy))
+                        PixelRenderer.DrawTile(bx + dx, by + dy, 'B');
         }
 
         if (!blinkPlayer)

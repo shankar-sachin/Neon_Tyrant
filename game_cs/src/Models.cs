@@ -66,6 +66,9 @@ public sealed class BossData
 
     [JsonPropertyName("phaseSpeed")]
     public List<float> PhaseSpeed { get; set; } = [1.6f, 2.7f];
+
+    [JsonPropertyName("size")]
+    public int Size { get; set; } = 1;
 }
 
 public sealed class ScoreEntry
